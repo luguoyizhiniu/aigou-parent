@@ -1,0 +1,16 @@
+server:
+  port: 1299
+spring:
+  application:
+    name: SPRING-CLOUD-CONFIG-SERVER #注册中心展示的名字
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/luguoyizhiniu/aigou-config.git #github仓库路径
+          username: 1073842437@qq.com #github账号
+          password: ztg83675775 #github密码
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka
