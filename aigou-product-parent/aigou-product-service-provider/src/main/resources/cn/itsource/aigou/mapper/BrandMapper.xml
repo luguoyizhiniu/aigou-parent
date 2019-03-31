@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itsource.aigou.mapper.BrandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.itsource.aigou.domain.Brand">
+        <id column="id" property="id"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="name" property="name"/>
+        <result column="englishName" property="englishName"/>
+        <result column="firstLetter" property="firstLetter"/>
+        <result column="description" property="description"/>
+        <result column="product_type_id" property="productTypeId"/>
+        <result column="sortIndex" property="sortIndex"/>
+        <result column="logo" property="logo"/>
+    </resultMap>
+
+    <!-- 关联商品类别表查询映射结果 -->
+    <resultMap id="BrandMap" type="cn.itsource.aigou.domain.Brand">
+        <id column="id" property="id"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="name" property="name"/>
+        <result column="englishName" property="englishName"/>
+        <result column="firstLetter" property="firstLetter"/>
+        <result column="description" property="description"/>
+        <result column="product_type_id" property="productTypeId"/>
+        <result column="sortIndex" property="sortIndex"/>
+        <result column="logo" property="logo"/>
+        <association property="productType" javaType="cn.itsource.aigou.domain.ProductType">
+            <id column="btid" property="id"/>
+            <result column="btname" property="name"/>
+        </association>
+    </resultMap>
+    <!--List<Brand> selectByKeyword();-->
+
+    <!--Long selectCountByKeyword();-->
+    <select id="selectByKeyword" parameterType="BrandQuery" resultMap="BrandMap">
+        select
+            b.id,
+            b.createTime,
+            b.updateTime,
+            b.name,
+            b.englishName,
+            b.firstLetter,
+            b.description,
+            b.product_type_id,
+            b.sortIndex,
+            b.logo,
+            bt.id btid,
+            bt.name btname
+        from t_brand b
+        left join t_product_type bt on b.product_type_id=bt.id
+        <include refid="whereSql"/>
+        limit #{start},#{rows}
+    </select>
+
+    <select id="selectCountByKeyword" parameterType="BrandQuery" resultType="long">
+        select count(*) from t_brand
+        <include refid="whereSql"/>
+    </select>
+
+    <sql id="whereSql">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                name like concat("%",#{keyword},"%") or description like concat("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+</mapper>

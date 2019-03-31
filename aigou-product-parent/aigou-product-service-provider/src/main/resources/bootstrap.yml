@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    config:
+      uri: http://127.0.0.1:1299 #配置中心服务器
+      label: master #配置文件在配置中心远程仓库的哪个分支
+      name: product_provider_config_application #配置文件在配置中心远程仓库的文件名
+      profile: dev #选择配置文件中的哪个运行环境
+      #profile: ${spring.config.profile} #项目部署时，动态选择运行环境

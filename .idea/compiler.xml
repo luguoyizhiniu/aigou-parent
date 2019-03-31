@@ -9,8 +9,11 @@
         <module name="aigou-basic-util" />
         <module name="aigou-config" />
         <module name="aigou-eureka" />
+        <module name="aigou-generator" />
         <module name="aigou-plat-interface" />
         <module name="aigou-plat-service-provider" />
+        <module name="aigou-product-interface" />
+        <module name="aigou-product-service-provider" />
         <module name="aigou-zuul" />
       </profile>
     </annotationProcessing>
