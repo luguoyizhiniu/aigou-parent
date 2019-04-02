@@ -1,10 +1,14 @@
 package cn.itsource.aigou.service.impl;
 
+import cn.itsource.aigou.base.Constant;
+import cn.itsource.aigou.common.feign.RedisFeignClient;
+import cn.itsource.aigou.common.feign.VelocityFeignClient;
 import cn.itsource.aigou.domain.ProductType;
 import cn.itsource.aigou.mapper.ProductTypeMapper;
 import cn.itsource.aigou.service.IProductTypeService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import org.mybatis.spring.annotation.MapperScan;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +31,28 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
     @Autowired
     private ProductTypeMapper productTypeMapper;
 
+    @Autowired
+    private RedisFeignClient redisFeignClient;
+
+    @Autowired
+    private VelocityFeignClient velocityFeignClient;
+
     @Override
     public List<ProductType> treeData() {
         //递归
         //return treeDataRecursion(0L);
         //循环
-        return treeDataLoop();
+        //return treeDataLoop();
+
+        //判断redis中有没有缓存
+        if (StringUtils.isEmpty(redisFeignClient.get(Constant.PRODUCT_TYPE))){
+            //没有就添加
+            redisFeignClient.set(Constant.PRODUCT_TYPE,JSON.toJSONString(treeDataLoop()));
+            System.out.println("开始缓存");
+        }
+        List<ProductType> parse = (List<ProductType>)JSON.parse(redisFeignClient.get(Constant.PRODUCT_TYPE));
+        System.out.println("已有缓存");
+        return parse;
     }
 
     //循环
@@ -74,5 +94,17 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
             productType.setChildren(childTypes);
         }
         return productTypes;
+    }
+
+    @Override
+    public boolean updateById(ProductType entity) {
+        boolean b = super.updateById(entity);
+        Map<String,Object> productTypeMap = new HashMap<>();
+//        model, templateFilePathAndName, targetFilePathAndName
+        productTypeMap.put(Constant.PAGE_MODEL,treeDataLoop());
+        productTypeMap.put(Constant.TEMPLATE_FILE_PATH_AND_NAME,"D:\\software\\IntelliJ IDEA\\IdeaProjects\\aigou-parent\\aigou-common-parent\\aigou-common-service-provider\\src\\main\\resources\\template\\product.type.vm");
+        productTypeMap.put(Constant.TARGET_FILE_PATH_AND_NAME,"D:\\software\\IntelliJ IDEA\\IdeaProjects\\aigou-parent\\aigou-common-parent\\aigou-common-service-provider\\src\\main\\resources\\template\\product.type.vm.html");
+        velocityFeignClient.createStaticPage(productTypeMap);
+        return b;
     }
 }

@@ -7,6 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="aigou-basic-util" />
+        <module name="aigou-common-interface" />
+        <module name="aigou-common-service-provider" />
         <module name="aigou-config" />
         <module name="aigou-eureka" />
         <module name="aigou-generator" />

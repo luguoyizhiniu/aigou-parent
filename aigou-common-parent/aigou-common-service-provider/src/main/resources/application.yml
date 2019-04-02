@@ -1,0 +1,10 @@
+server:
+  port: 8003
+  max-http-header-size: 4048576 #请求头数据量过大，报Request header is too large错误时，设置此项
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka
+spring:
+  application:
+    name: COMMON-PROVIDER
